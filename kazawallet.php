@@ -12,9 +12,10 @@ if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
 }
 
-// Include helper functions and configuration
-require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/helpers.php';
+// Configuration constants
+define('KAZAWALLET_API_URL', 'https://outdoor.kasroad.com');
+define('KAZAWALLET_PAYMENT_LINK_ENDPOINT', '/wallet/createPaymentLink');
+define('KAZAWALLET_WITHDRAWAL_ENDPOINT', '/wallet/createWithdrawalRequest');
 
 /**
  * Define module related meta data.
@@ -184,7 +185,7 @@ function kazawallet_refund($params)
  */
 function createKazaWalletPaymentLink($apiKey, $apiSecret, $paymentData)
 {
-    $url = 'https://outdoor.kasroad.com/wallet/createPaymentLink';
+    $url = KAZAWALLET_API_URL . KAZAWALLET_PAYMENT_LINK_ENDPOINT;
     
     $headers = array(
         'x-api-key: ' . $apiKey,
@@ -221,7 +222,7 @@ function createKazaWalletPaymentLink($apiKey, $apiSecret, $paymentData)
  */
 function processKazaWalletWithdrawal($apiKey, $apiSecret, $email, $currency, $amount, $note)
 {
-    $url = 'https://outdoor.kasroad.com/wallet/createWithdrawalRequest';
+    $url = KAZAWALLET_API_URL . KAZAWALLET_WITHDRAWAL_ENDPOINT;
     
     $withdrawalData = array(
         'email' => $email,

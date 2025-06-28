@@ -5,21 +5,40 @@ A comprehensive WHMCS payment gateway plugin for Kaza Wallet payment processing.
 ## Features
 
 - ✅ Secure payment processing via Kaza Wallet API
-- ✅ Support for both sandbox and live environments
+- ✅ Single API endpoint (no sandbox/live separation)
 - ✅ Automatic callback URL generation and display
 - ✅ Admin panel configuration with copy-to-clipboard functionality
 - ✅ Transaction logging and error handling
-- ✅ Refund support
-- ✅ Payment status verification with hash validation
+- ✅ Refund support via withdrawal API
+- ✅ Payment status verification with HMAC signature validation
 - ✅ Responsive admin interface with status indicators
+
+## Quick Installation Guide
+
+### For Basic Setup (Recommended):
+1. Upload **only** `kazawallet.php` to `modules/gateways/`
+2. Activate "Kaza Wallet" in WHMCS Admin → Setup → Payment Gateways
+3. Configure with your API Key and API Secret
+4. Test with a small payment
+
+### For Full Features:
+1. Upload `kazawallet.php` to `modules/gateways/`
+2. Upload `callback/kazawallet.php` to `modules/gateways/callback/`
+3. Upload `hooks/kazawallet_admin.php` to `includes/hooks/`
+4. Configure as above
 
 ## Installation
 
 ### Step 1: Upload Files
 
-1. Copy `kazawallet.php` to your WHMCS `modules/gateways/` directory
-2. Copy `callback/kazawallet.php` to your WHMCS `modules/gateways/callback/` directory
-3. Copy `hooks/kazawallet_admin.php` to your WHMCS `includes/hooks/` directory
+1. Copy **only** `kazawallet.php` to your WHMCS `modules/gateways/` directory
+2. Copy `callback/kazawallet.php` to your WHMCS `modules/gateways/callback/` directory *(optional)*
+3. Copy `hooks/kazawallet_admin.php` to your WHMCS `includes/hooks/` directory *(optional)*
+
+**Important**: 
+- ❌ **Do NOT** copy `config.php` or `helpers.php` to the `modules/gateways/` directory
+- ✅ **Only** the `kazawallet.php` file should be in `modules/gateways/`
+- ✅ The main `kazawallet.php` file is self-contained and includes all necessary code
 
 ### Step 2: Activate the Gateway
 
@@ -31,8 +50,8 @@ A comprehensive WHMCS payment gateway plugin for Kaza Wallet payment processing.
 
 1. Click **Manage** next to Kaza Wallet
 2. Enter your **API Key** from your Kaza Wallet merchant dashboard
-3. Enter your **Secret Key** from your Kaza Wallet merchant dashboard
-4. Choose **Sandbox Mode** for testing or uncheck for live payments
+3. Enter your **API Secret** from your Kaza Wallet merchant dashboard
+4. Choose **Test Mode** for testing or uncheck for live payments
 5. The **Callback URL** will be automatically generated
 6. Customize the **Payment Description** if needed
 7. Click **Save Changes**
@@ -49,9 +68,9 @@ A comprehensive WHMCS payment gateway plugin for Kaza Wallet payment processing.
 
 | Setting | Description | Required |
 |---------|-------------|----------|
-| API Key | Your Kaza Wallet API key | ✅ Yes |
-| Secret Key | Your Kaza Wallet secret key for webhook verification | ✅ Yes |
-| Sandbox Mode | Enable for testing, disable for live payments | No |
+| API Key | Your Kaza Wallet API key (x-api-key header) | ✅ Yes |
+| API Secret | Your Kaza Wallet API secret for webhook verification | ✅ Yes |
+| Test Mode | Enable for testing, disable for live payments | No |
 | Callback URL | Auto-generated webhook URL (copy to Kaza Wallet dashboard) | Auto |
 | Payment Description | Description shown on payment page | No |
 
@@ -60,17 +79,19 @@ A comprehensive WHMCS payment gateway plugin for Kaza Wallet payment processing.
 ```
 whmcs-root/
 ├── modules/gateways/
-│   ├── kazawallet.php              # Main gateway module
-│   └── callback/
-│       └── kazawallet.php          # Payment callback handler
+│   └── kazawallet.php              # Main gateway module (REQUIRED)
+├── modules/gateways/callback/
+│   └── kazawallet.php              # Payment callback handler (OPTIONAL)
 └── includes/hooks/
-    └── kazawallet_admin.php        # Admin interface enhancements
+    └── kazawallet_admin.php        # Admin interface enhancements (OPTIONAL)
 ```
+
+**Important**: Do NOT place `config.php` or `helpers.php` in the `modules/gateways/` directory as WHMCS will try to load them as gateway modules and cause errors.
 
 ## Testing
 
-1. Enable **Sandbox Mode** in the gateway configuration
-2. Use Kaza Wallet sandbox credentials
+1. Enable **Test Mode** in the gateway configuration
+2. Use your Kaza Wallet API credentials
 3. Create a test invoice and attempt payment
 4. Verify payment status and callback processing
 5. Check transaction logs in WHMCS admin
@@ -79,9 +100,14 @@ whmcs-root/
 
 ### Common Issues
 
+**Gateway Module Error: Configuration function not found**
+- Remove `config.php` and `helpers.php` from `modules/gateways/` directory
+- WHMCS tries to load all PHP files in that directory as gateway modules
+- Only `kazawallet.php` should be in the `modules/gateways/` directory
+
 **Payment Link Not Generated**
 - Verify API credentials are correct
-- Check if sandbox/live mode matches your credentials
+- Check API key format and permissions
 - Review WHMCS system logs for errors
 
 **Callbacks Not Working**
@@ -89,9 +115,10 @@ whmcs-root/
 - Verify webhook URL is accessible (test in browser)
 - Check WHMCS gateway logs for callback errors
 
-**Hash Validation Failures**
-- Confirm secret key matches in both WHMCS and Kaza Wallet
+**Signature Validation Failures**
+- Confirm API secret matches in both WHMCS and Kaza Wallet
 - Ensure webhook payload format is correct
+- Verify HMAC signature calculation
 
 ### Log Files
 
@@ -100,19 +127,18 @@ whmcs-root/
 
 ## API Endpoints
 
-The plugin uses the following Kaza Wallet API endpoints:
+The plugin uses the following Kaza Wallet API endpoint:
 
-- **Live**: `https://api.kazawallet.com`
-- **Sandbox**: `https://sandbox-api.kazawallet.com`
+- **API Base URL**: `https://outdoor.kasroad.com`
 
 ### Endpoints Used
 
-- `POST /v1/payment-links` - Create payment link
-- `POST /v1/refunds` - Process refunds
+- `POST /wallet/createPaymentLink` - Create payment link
+- `POST /wallet/createWithdrawalRequest` - Process withdrawals/refunds
 
 ## Security Features
 
-- ✅ Hash-based callback verification
+- ✅ HMAC-SHA512 signature verification for webhooks
 - ✅ SSL/TLS encryption for API calls
 - ✅ Secure credential storage
 - ✅ Transaction validation
@@ -144,4 +170,4 @@ Mozilla Public License Version 2.0 - see LICENSE file for details.
 
 ---
 
-**Note**: Always test in sandbox mode before enabling live payments.
+**Note**: Always test with small amounts before processing live payments.
