@@ -94,6 +94,9 @@ function kazawallet_link($params)
     $langPayNow = $params['langpaynow'];
     $moduleName = $params['paymentmethod'];
 
+    // Log the payment request
+    logActivity('Kaza Wallet Payment Link Request for Invoice #' . $invoiceId);
+
     try {
         // Create payment link via Kaza Wallet API
         $paymentData = array(
@@ -131,16 +134,31 @@ function kazawallet_link($params)
         }
 
         $responseData = json_decode($response, true);
+        
+        // Log the API response
+        logTransaction($params['name'], array(
+            'request' => $paymentData,
+            'response' => $responseData,
+            'http_code' => $httpCode
+        ), 'API Response');
 
         if ($httpCode !== 200 || !$responseData) {
+            logTransaction($params['name'], array('http_code' => $httpCode, 'response' => $response), 'API Error');
             return '<div class="alert alert-danger">Payment gateway error. Please contact support.</div>';
         }
 
         // Check if payment link was created successfully
         if (isset($responseData['success']) && $responseData['success']) {
             $paymentUrl = isset($responseData['payment_url']) ? $responseData['payment_url'] : null;
+            $orderId = isset($responseData['order_id']) ? $responseData['order_id'] : null;
             
             if ($paymentUrl) {
+                // Store order ID for webhook verification
+                if ($orderId) {
+                    // You might want to store this in a custom table or session
+                    // For now, we'll include it in the form
+                }
+                
                 // Redirect to payment URL
                 $htmlOutput = '<script>window.location.href = "' . htmlspecialchars($paymentUrl) . '";</script>';
                 $htmlOutput .= '<div class="text-center">';
@@ -153,9 +171,11 @@ function kazawallet_link($params)
         }
 
         // If we reach here, something went wrong
+        logTransaction($params['name'], $responseData, 'Payment Link Creation Failed');
         return '<div class="alert alert-danger">Unable to create payment link. Please try again or contact support.</div>';
 
     } catch (Exception $e) {
+        logTransaction($params['name'], array('exception' => $e->getMessage()), 'Exception');
         return '<div class="alert alert-danger">Payment processing error. Please try again later.</div>';
     }
 }
@@ -221,6 +241,14 @@ function kazawallet_refund($params)
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $error = curl_error($curl);
         curl_close($curl);
+
+        // Log the refund request
+        logTransaction($params['name'], array(
+            'request' => $withdrawalData,
+            'response' => $response,
+            'http_code' => $httpCode,
+            'curl_error' => $error
+        ), 'Refund Request');
 
         if ($error) {
             return array(

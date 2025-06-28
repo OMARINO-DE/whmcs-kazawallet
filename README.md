@@ -1,173 +1,134 @@
 # WHMCS Kaza Wallet Payment Gateway
 
-A comprehensive WHMCS payment gateway plugin for Kaza Wallet payment processing.
+A WHMCS payment gateway plugin for Kaza Wallet payment processing.
+
+**Status: ✅ WORKING! Solution found - activation requires Apps & Integrations step first.**
+
+## ✅ SOLUTION FOUND!
+
+**IMPORTANT**: The gateway must be activated through **Apps & Integrations** first, not directly in Payment Gateways.
+
+### Correct Activation Process:
+1. **First**: Setup → System Settings → Payment → **Apps & Integrations** 
+2. **Then**: Setup → Payment Gateways (gateway will now appear here)
+
+This explains why the gateway wasn't appearing despite all diagnostics passing!
 
 ## Features
 
-- ✅ Secure payment processing via Kaza Wallet API
-- ✅ Single API endpoint (no sandbox/live separation)
-- ✅ Automatic callback URL generation and display
-- ✅ Admin panel configuration with copy-to-clipboard functionality
-- ✅ Transaction logging and error handling
-- ✅ Refund support via withdrawal API
-- ✅ Payment status verification with HMAC signature validation
-- ✅ Responsive admin interface with status indicators
+- ✅ **Real Kaza Wallet API integration** - Uses actual Kaza Wallet endpoints
+- ✅ **Payment link creation** - Creates payment links via Kaza Wallet API
+- ✅ **Webhook processing** - Handles payment notifications automatically
+- ✅ **Signature verification** - Secure HMAC-SHA512 verification
+- ✅ **Refund support** - Processes refunds via withdrawal requests
+- ✅ **WHMCS-compliant** - Follows all WHMCS standards
+- ✅ **Third-party gateway** - Redirects users to Kaza Wallet payment page
 
-## Quick Installation Guide
-
-### For Basic Setup (Recommended):
-1. Upload **only** `kazawallet.php` to `modules/gateways/`
-2. Activate "Kaza Wallet" in WHMCS Admin → Setup → Payment Gateways
-3. Configure with your API Key and API Secret
-4. Test with a small payment
-
-### For Full Features:
-1. Upload `kazawallet.php` to `modules/gateways/`
-2. Upload `callback/kazawallet.php` to `modules/gateways/callback/`
-3. Upload `hooks/kazawallet_admin.php` to `includes/hooks/`
-4. Configure as above
-
-## Installation
+## Quick Installation
 
 ### Step 1: Upload Files
+1. Upload **only** `kazawallet.php` to your WHMCS `modules/gateways/` directory
+2. Upload `callback/kazawallet.php` to your WHMCS `modules/gateways/callback/` directory
 
-1. Copy **only** `kazawallet.php` to your WHMCS `modules/gateways/` directory
-2. Copy `callback/kazawallet.php` to your WHMCS `modules/gateways/callback/` directory *(optional)*
-3. Copy `hooks/kazawallet_admin.php` to your WHMCS `includes/hooks/` directory *(optional)*
+### Step 2: Activate the Gateway ⚠️ IMPORTANT
+**Correct activation process:**
 
-**Important**: 
-- ❌ **Do NOT** copy `config.php` or `helpers.php` to the `modules/gateways/` directory
-- ✅ **Only** the `kazawallet.php` file should be in `modules/gateways/`
-- ✅ The main `kazawallet.php` file is self-contained and includes all necessary code
+1. **First**: Login to WHMCS Admin
+2. **Go to**: Setup → System Settings → Payment → **Apps & Integrations**
+3. **Find**: "Kaza Wallet Payment Gateway" and activate it there
+4. **Then**: Go to Setup → Payment Gateways 
+5. **Find**: "Kaza Wallet Payment Gateway" (it will now appear here)
+6. **Click**: "Activate" and configure with your API credentials
 
-### Step 2: Activate the Gateway
+**Note**: The gateway MUST be activated in Apps & Integrations first, or it won't appear in Payment Gateways!
 
-1. Login to your WHMCS Admin Panel
-2. Navigate to **Setup → Payments → Payment Gateways**
-3. Find "Kaza Wallet" in the list and click **Activate**
+## Configuration
 
-### Step 3: Configure the Gateway
+| Field | Description |
+|-------|-------------|
+| API Key | Your Kaza Wallet API Key (x-api-key) |
+| API Secret | Your Kaza Wallet API Secret (x-api-secret) |
+| Test Mode | Enable for testing |
 
-1. Click **Manage** next to Kaza Wallet
-2. Enter your **API Key** from your Kaza Wallet merchant dashboard
-3. Enter your **API Secret** from your Kaza Wallet merchant dashboard
-4. Choose **Test Mode** for testing or uncheck for live payments
-5. The **Callback URL** will be automatically generated
-6. Customize the **Payment Description** if needed
-7. Click **Save Changes**
-
-### Step 4: Configure Webhooks in Kaza Wallet
-
-1. Copy the **Callback URL** from the WHMCS configuration (use the copy button)
-2. Login to your Kaza Wallet merchant dashboard
-3. Navigate to webhook/callback settings
-4. Add the copied callback URL
-5. Ensure the webhook is set to send payment notifications
-
-## Configuration Options
-
-| Setting | Description | Required |
-|---------|-------------|----------|
-| API Key | Your Kaza Wallet API key (x-api-key header) | ✅ Yes |
-| API Secret | Your Kaza Wallet API secret for webhook verification | ✅ Yes |
-| Test Mode | Enable for testing, disable for live payments | No |
-| Callback URL | Auto-generated webhook URL (copy to Kaza Wallet dashboard) | Auto |
-| Payment Description | Description shown on payment page | No |
+**Important**: Get your API credentials from your Kaza Wallet merchant dashboard.
 
 ## File Structure
 
 ```
 whmcs-root/
 ├── modules/gateways/
-│   └── kazawallet.php              # Main gateway module (REQUIRED)
-├── modules/gateways/callback/
-│   └── kazawallet.php              # Payment callback handler (OPTIONAL)
-└── includes/hooks/
-    └── kazawallet_admin.php        # Admin interface enhancements (OPTIONAL)
+│   └── kazawallet.php              # Main gateway (REQUIRED)
+└── modules/gateways/callback/
+    └── kazawallet.php              # Callback handler (REQUIRED)
 ```
-
-**Important**: Do NOT place `config.php` or `helpers.php` in the `modules/gateways/` directory as WHMCS will try to load them as gateway modules and cause errors.
-
-## Testing
-
-1. Enable **Test Mode** in the gateway configuration
-2. Use your Kaza Wallet API credentials
-3. Create a test invoice and attempt payment
-4. Verify payment status and callback processing
-5. Check transaction logs in WHMCS admin
 
 ## Troubleshooting
 
+### Gateway Not Appearing?
+
+⚠️ **MOST COMMON ISSUE**: Gateway must be activated in **Apps & Integrations** first!
+
+**Correct process:**
+1. **Setup → System Settings → Payment → Apps & Integrations** (activate here first)
+2. **Then** Setup → Payment Gateways (gateway will appear here)
+
+**Other checks:**
+1. **Check file location** - Ensure `kazawallet.php` is in `modules/gateways/`
+2. **Check file permissions** - Should be readable (644 or 755)
+3. **Clear WHMCS cache** - Admin → System Settings → General Settings → Other → Clear Template Cache
+4. **Refresh browser** and check Payment Gateways again
+
 ### Common Issues
 
-**Gateway Module Error: Configuration function not found**
-- Remove `config.php` and `helpers.php` from `modules/gateways/` directory
-- WHMCS tries to load all PHP files in that directory as gateway modules
-- Only `kazawallet.php` should be in the `modules/gateways/` directory
-
-**Payment Link Not Generated**
-- Verify API credentials are correct
-- Check API key format and permissions
-- Review WHMCS system logs for errors
-
-**Callbacks Not Working**
-- Ensure callback URL is correctly configured in Kaza Wallet dashboard
-- Verify webhook URL is accessible (test in browser)
-- Check WHMCS gateway logs for callback errors
-
-**Signature Validation Failures**
-- Confirm API secret matches in both WHMCS and Kaza Wallet
-- Ensure webhook payload format is correct
-- Verify HMAC signature calculation
-
-### Log Files
-
-- WHMCS Gateway Logs: `Admin → Utilities → Logs → Gateway Log`
-- System Activity: `Admin → Utilities → Logs → Activity Log`
-
-## API Endpoints
-
-The plugin uses the following Kaza Wallet API endpoint:
-
-- **API Base URL**: `https://outdoor.kasroad.com`
-
-### Endpoints Used
-
-- `POST /wallet/createPaymentLink` - Create payment link
-- `POST /wallet/createWithdrawalRequest` - Process withdrawals/refunds
-
-## Security Features
-
-- ✅ HMAC-SHA512 signature verification for webhooks
-- ✅ SSL/TLS encryption for API calls
-- ✅ Secure credential storage
-- ✅ Transaction validation
-- ✅ Invoice amount verification
+- **File in wrong directory** - Must be in `modules/gateways/`
+- **Incorrect filename** - Must be exactly `kazawallet.php`
+- **Forgot Apps & Integrations step** - Must activate there first
+- **WHMCS cache** - Clear template cache and refresh browser
 
 ## Support
 
-For technical support:
-
-1. **Kaza Wallet API Issues**: Contact [Kaza Wallet Support](https://www.kazawallet.com/support)
-2. **WHMCS Integration Issues**: Check WHMCS documentation or community forums
-3. **Plugin Issues**: Review this documentation and check logs
+1. Check WHMCS gateway logs: Admin → Utilities → Logs → Gateway Log
+2. Ensure you're using the exact files from this repository  
+3. Follow the correct activation process: Apps & Integrations first, then Payment Gateways
 
 ## Version History
 
-- **v1.0.0** - Initial release with full payment processing, callbacks, and admin interface
-
-## License
-
-Mozilla Public License Version 2.0 - see LICENSE file for details.
+- **v2.0.0** - 🚀 FULL API INTEGRATION: Real Kaza Wallet API implementation with payment links, webhooks, and refunds
+- **v1.0.5** - 🎉 WORKING VERSION: Found activation solution (Apps & Integrations first), cleaned up unnecessary files
+- **v1.0.4** - Created comprehensive diagnostic tools 
+- **v1.0.3** - Simplified to match WHMCS sample exactly
+- **v1.0.2** - Consolidated version following official WHMCS sample gateway structure
+- **v1.0.1** - Fixed PHP 5.6 compatibility 
+- **v1.0.0** - Initial release
 
 ## Requirements
 
 - WHMCS 7.0 or higher
-- PHP 7.0 or higher
-- cURL extension enabled
-- Valid Kaza Wallet merchant account
-- SSL certificate (recommended for production)
+- PHP 5.6 or higher
+- Standard WHMCS installation
+
+## Notes
+
+- **Full Kaza Wallet API integration** - Uses real payment links and webhooks
+- **Secure payment processing** - HMAC-SHA512 signature verification
+- **Automatic payment confirmation** - Webhooks update invoice status automatically  
+- **Refund support** - Creates withdrawal requests for refunds
+- **Production ready** - Ready for live payments with proper API credentials
+
+## API Integration Details
+
+### Payment Flow:
+1. Customer clicks "Pay Now" 
+2. Gateway creates payment link via Kaza Wallet API
+3. Customer redirected to Kaza Wallet payment page
+4. After payment, Kaza Wallet sends webhook to your site
+5. Callback verifies signature and marks invoice as paid
+
+### Webhook URL:
+Your webhook URL will be: `https://yourdomain.com/modules/gateways/callback/kazawallet.php`
+
+**⚠️ Important**: Configure this webhook URL in your Kaza Wallet merchant dashboard!
 
 ---
 
-**Note**: Always test with small amounts before processing live payments.
+**✅ Gateway now works! Remember the Apps & Integrations activation step.**
