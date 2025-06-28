@@ -1,0 +1,60 @@
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+
+# Cache files
+cache/
+*.cache
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Configuration files with sensitive data
+config.local.php
+local_config.php
+
+# Test files
+test_credentials.php
+local_test.php
+
+# Backup files
+*.bak
+*.backup
+backup/
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Documentation builds
+docs/build/
+docs/_build/
+
+# Package files
+vendor/
+node_modules/
+composer.lock
+package-lock.json
+
+# Runtime files
+*.pid
+*.sock
