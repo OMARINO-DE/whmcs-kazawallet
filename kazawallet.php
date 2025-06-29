@@ -45,7 +45,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET' &&
 /**
  * Gateway constants
  */
-define('KAZAWALLET_VERSION', '2.5.2');
+define('KAZAWALLET_VERSION', '3.0.0');
 define('KAZAWALLET_API_BASE_URL', 'https://outdoor.kasroad.com/wallet');
 define('KAZAWALLET_MAX_AMOUNT', 999999.99);
 define('KAZAWALLET_MIN_AMOUNT', 0.01);
@@ -360,9 +360,9 @@ function kazawallet_secureCurlRequest($url, $data, $headers, $timeout = 30, $met
             'X-Request-ID: ' . $requestId,
             'Accept-Charset: UTF-8'
         ]),
-        // Security: Enable SSL verification (relaxed for testing)
-        CURLOPT_SSL_VERIFYPEER => false, // TEMPORARY: Disable for testing
-        CURLOPT_SSL_VERIFYHOST => 0,     // TEMPORARY: Disable for testing
+        // Security: Enable SSL verification for production
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_CAINFO => null, // Use system CA bundle
         // Security: Additional protections
         CURLOPT_FOLLOWLOCATION => false,
@@ -412,7 +412,7 @@ function kazawallet_MetaData()
         'DisableLocalCreditCardInput' => true,
         'TokenisedStorage' => false,
         'Developer' => 'OMARINO IT Services',
-        'Version' => '2.5.2',
+        'Version' => '3.0.0',
         'Website' => 'https://www.omarino.de',
     );
 }
@@ -442,7 +442,7 @@ function kazawallet_config()
                     </div>
                 </div>
                 <div style="border-top: 1px solid #dee2e6; padding-top: 15px;">
-                    <p style="margin: 5px 0; color: #495057;"><strong>Gateway:</strong> Kaza Wallet Payment Gateway v2.5.2</p>
+                    <p style="margin: 5px 0; color: #495057;"><strong>Gateway:</strong> Kaza Wallet Payment Gateway v3.0.0</p>
                     <p style="margin: 5px 0; color: #495057;"><strong>Developer:</strong> OMARINO IT Services</p>
                     <p style="margin: 5px 0; color: #495057;"><strong>Website:</strong> <a href="https://www.omarino.de" target="_blank" style="color: #007bff;">https://www.omarino.de</a></p>
                     <p style="margin: 5px 0; color: #495057;"><strong>Support:</strong> <a href="mailto:info@omarino.de" style="color: #007bff;">info@omarino.de</a></p>
@@ -1084,3 +1084,4 @@ function kazawallet_adminstatusmsg($params)
         </div>
     </div>';
 }
+
