@@ -67,21 +67,6 @@ define('KAZAWALLET_SIGNATURE_TOLERANCE', 300); // 5 minutes
  * @param array $context
  * @return void
  */
-function kazawallet_log($level, $message, $context = [])
-{
-    $levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'];
-    if (!in_array($level, $levels)) {
-        $level = 'INFO';
-    }
-    
-    $timestamp = date('Y-m-d H:i:s T');
-    $requestId = kazawallet_getRequestId();
-    $contextStr = !empty($context) ? ' | Context: ' . json_encode($context) : '';
-    
-    $logMessage = "[{$timestamp}] KazaWallet.{$level}: [{$requestId}] {$message}{$contextStr}";
-    error_log($logMessage);
-}
-
 /**
  * Generate or retrieve request ID for tracking
  *
@@ -124,19 +109,19 @@ function kazawallet_generateSecureToken($length = 32)
 function kazawallet_validateEmail($email, $maxLength = 254)
 {
     if (empty($email)) {
-        kazawallet_log('WARNING', 'Email validation failed: empty email');
+
         return false;
     }
     
     // Security: Check length before processing
     if (strlen($email) > $maxLength) {
-        kazawallet_log('WARNING', 'Email validation failed: exceeds maximum length', ['length' => strlen($email)]);
+
         return false;
     }
     
     $email = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
     if ($email === false) {
-        kazawallet_log('WARNING', 'Email validation failed: invalid format');
+
         return false;
     }
     
@@ -144,12 +129,12 @@ function kazawallet_validateEmail($email, $maxLength = 254)
     $maliciousPatterns = ['<script', 'javascript:', 'data:', 'vbscript:', 'onload=', 'onerror=', 'eval(', 'expression('];
     foreach ($maliciousPatterns as $pattern) {
         if (stripos($email, $pattern) !== false) {
-            kazawallet_log('CRITICAL', 'Email validation failed: malicious pattern detected', ['pattern' => $pattern]);
+
             return false;
         }
     }
     
-    kazawallet_log('DEBUG', 'Email validation successful', ['email' => substr($email, 0, 3) . '***']);
+
     return $email;
 }
 
@@ -162,31 +147,31 @@ function kazawallet_validateEmail($email, $maxLength = 254)
 function kazawallet_validateApiKey($apiKey)
 {
     if (empty($apiKey)) {
-        kazawallet_log('WARNING', 'API key validation failed: empty key');
+
         return false;
     }
     
     // Security: Check length bounds (Kaza Wallet uses 12-character alphanumeric credentials)
     $length = strlen($apiKey);
     if ($length < 8 || $length > 200) {
-        kazawallet_log('WARNING', 'API key validation failed: invalid length', ['length' => $length]);
+
         return false;
     }
     
     // Security: API key should contain valid characters
     // Kaza Wallet uses alphanumeric format (letters and numbers) but also allow other common API key formats
     if (!preg_match('/^[a-zA-Z0-9\-_.+=\/]{8,200}$/', $apiKey)) {
-        kazawallet_log('WARNING', 'API key validation failed: invalid format');
+
         return false;
     }
     
     // Security: Basic sanity check - shouldn't be all the same character
     if (preg_match('/^(.)\1+$/', $apiKey)) {
-        kazawallet_log('WARNING', 'API key validation failed: appears to be invalid pattern');
+
         return false;
     }
     
-    kazawallet_log('DEBUG', 'API key validation successful', ['length' => $length]);
+
     return true;
 }
 
@@ -199,31 +184,31 @@ function kazawallet_validateApiKey($apiKey)
 function kazawallet_validateApiSecret($apiSecret)
 {
     if (empty($apiSecret)) {
-        kazawallet_log('WARNING', 'API secret validation failed: empty secret');
+
         return false;
     }
     
     // Security: Check length bounds (Kaza Wallet uses 12-character alphanumeric credentials)
     $length = strlen($apiSecret);
     if ($length < 8 || $length > 200) {
-        kazawallet_log('WARNING', 'API secret validation failed: invalid length', ['length' => $length]);
+
         return false;
     }
     
     // Security: API secret should contain valid characters
     // Kaza Wallet uses alphanumeric format (letters and numbers) but also allow other common API secret formats
     if (!preg_match('/^[a-zA-Z0-9\-_.+=\/]{8,200}$/', $apiSecret)) {
-        kazawallet_log('WARNING', 'API secret validation failed: invalid format');
+
         return false;
     }
     
     // Security: Basic sanity check - shouldn't be all the same character
     if (preg_match('/^(.)\1+$/', $apiSecret)) {
-        kazawallet_log('WARNING', 'API secret validation failed: appears to be invalid pattern');
+
         return false;
     }
     
-    kazawallet_log('DEBUG', 'API secret validation successful', ['length' => $length]);
+
     return true;
 }
 
@@ -238,7 +223,7 @@ function kazawallet_validateApiSecret($apiSecret)
 function kazawallet_validateAmount($amount, $minAmount = KAZAWALLET_MIN_AMOUNT, $maxAmount = KAZAWALLET_MAX_AMOUNT)
 {
     if (!is_numeric($amount)) {
-        kazawallet_log('WARNING', 'Amount validation failed: not numeric', ['amount' => $amount]);
+
         return false;
     }
     
@@ -246,15 +231,9 @@ function kazawallet_validateAmount($amount, $minAmount = KAZAWALLET_MIN_AMOUNT, 
     
     // Security: Amount should be within reasonable limits
     if ($amount < $minAmount || $amount > $maxAmount) {
-        kazawallet_log('WARNING', 'Amount validation failed: out of range', [
-            'amount' => $amount,
-            'min' => $minAmount,
-            'max' => $maxAmount
-        ]);
         return false;
     }
     
-    kazawallet_log('DEBUG', 'Amount validation successful', ['amount' => $amount]);
     return $amount;
 }
 
@@ -268,13 +247,13 @@ function kazawallet_validateAmount($amount, $minAmount = KAZAWALLET_MIN_AMOUNT, 
 function kazawallet_validateCurrency($currency, $supportedCurrencies = null)
 {
     if (empty($currency)) {
-        kazawallet_log('WARNING', 'Currency validation failed: empty currency');
+
         return false;
     }
     
     // Security: Currency should be 3-letter ISO code
     if (!preg_match('/^[A-Z]{3}$/', strtoupper($currency))) {
-        kazawallet_log('WARNING', 'Currency validation failed: invalid format', ['currency' => $currency]);
+
         return false;
     }
     
@@ -285,14 +264,9 @@ function kazawallet_validateCurrency($currency, $supportedCurrencies = null)
     
     $currency = strtoupper($currency);
     if (!in_array($currency, $supportedCurrencies, true)) {
-        kazawallet_log('WARNING', 'Currency validation failed: not supported', [
-            'currency' => $currency,
-            'supported' => $supportedCurrencies
-        ]);
         return false;
     }
     
-    kazawallet_log('DEBUG', 'Currency validation successful', ['currency' => $currency]);
     return $currency;
 }
 
@@ -306,7 +280,7 @@ function kazawallet_validateCurrency($currency, $supportedCurrencies = null)
 function kazawallet_validateInvoiceId($invoiceId, $maxLength = 20)
 {
     if (empty($invoiceId)) {
-        kazawallet_log('WARNING', 'Invoice ID validation failed: empty ID');
+
         return false;
     }
     
@@ -314,20 +288,16 @@ function kazawallet_validateInvoiceId($invoiceId, $maxLength = 20)
     
     // Security: Check length
     if (strlen($invoiceId) > $maxLength) {
-        kazawallet_log('WARNING', 'Invoice ID validation failed: exceeds maximum length', [
-            'length' => strlen($invoiceId),
-            'max' => $maxLength
-        ]);
         return false;
     }
     
     // Security: Invoice ID should be numeric
     if (!preg_match('/^[0-9]{1,' . $maxLength . '}$/', $invoiceId)) {
-        kazawallet_log('WARNING', 'Invoice ID validation failed: invalid format', ['id' => $invoiceId]);
+
         return false;
     }
     
-    kazawallet_log('DEBUG', 'Invoice ID validation successful', ['id' => $invoiceId]);
+
     return $invoiceId;
 }
 
@@ -358,14 +328,14 @@ function kazawallet_secureCurlRequest($url, $data, $headers, $timeout = 30, $met
     
     // Security: Validate URL
     if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https:\/\//', $url)) {
-        kazawallet_log('ERROR', 'cURL request failed: invalid URL', ['url' => $url, 'request_id' => $requestId]);
+
         return ['error' => true, 'message' => 'Invalid API URL'];
     }
     
     // Security: Validate method
     $allowedMethods = ['GET', 'POST', 'PUT', 'DELETE'];
     if (!in_array(strtoupper($method), $allowedMethods)) {
-        kazawallet_log('ERROR', 'cURL request failed: invalid method', ['method' => $method, 'request_id' => $requestId]);
+
         return ['error' => true, 'message' => 'Invalid HTTP method'];
     }
     
@@ -375,21 +345,8 @@ function kazawallet_secureCurlRequest($url, $data, $headers, $timeout = 30, $met
     // Security: Validate data size
     $dataSize = strlen(json_encode($data));
     if ($dataSize > KAZAWALLET_MAX_REQUEST_SIZE) {
-        kazawallet_log('ERROR', 'cURL request failed: data too large', [
-            'size' => $dataSize,
-            'max' => KAZAWALLET_MAX_REQUEST_SIZE,
-            'request_id' => $requestId
-        ]);
         return ['error' => true, 'message' => 'Request data too large'];
     }
-    
-    kazawallet_log('INFO', 'Starting API request', [
-        'url' => $url,
-        'method' => $method,
-        'timeout' => $timeout,
-        'data_size' => $dataSize,
-        'request_id' => $requestId
-    ]);
     
     $curl = curl_init();
     curl_setopt_array($curl, array(
@@ -428,19 +385,8 @@ function kazawallet_secureCurlRequest($url, $data, $headers, $timeout = 30, $met
     
     $duration = round(($endTime - $startTime) * 1000, 2);
 
-    kazawallet_log('INFO', 'API request completed', [
-        'http_code' => $httpCode,
-        'duration_ms' => $duration,
-        'response_size' => strlen($response),
-        'has_error' => !empty($error),
-        'request_id' => $requestId
-    ]);
-
     if (!empty($error)) {
-        kazawallet_log('ERROR', 'cURL request failed', [
-            'error' => $error,
-            'request_id' => $requestId
-        ]);
+        // Handle error if needed
     }
 
     return [
@@ -712,39 +658,10 @@ function kazawallet_link($params)
         // Security: Use secure cURL request
         $result = kazawallet_secureCurlRequest($apiUrl, $paymentData, $headers, 30);
 
-        // Log the payment request details for verification
-        kazawallet_log('INFO', 'Payment link creation request', [
-            'api_url' => $apiUrl,
-            'payment_data' => [
-                'amount' => $paymentData['amount'],
-                'currency' => $paymentData['currency'],
-                'email' => $paymentData['email'],
-                'ref' => $paymentData['ref'],
-                'redirectUrl' => $paymentData['redirectUrl']
-            ],
-            'original_return_url' => $returnUrl,
-            'webhook_url_for_dashboard' => $callbackUrl,
-            'invoice_id' => $invoiceId,
-            'request_id' => $result['request_id'] ?? 'unknown'
-        ]);
 
-        // TEMPORARY DEBUG: Log detailed response for troubleshooting
-        kazawallet_log('DEBUG', 'Payment API response details', [
-            'result_error' => $result['error'] ?? 'none',
-            'http_code' => $result['httpCode'] ?? 'unknown',
-            'response_length' => strlen($result['response'] ?? ''),
-            'response_preview' => substr($result['response'] ?? '', 0, 200),
-            'request_id' => $result['request_id'] ?? 'unknown'
-        ]);
 
         if (!empty($result['error'])) {
             // Security: Generic error message to prevent information disclosure
-            kazawallet_log('ERROR', 'Payment API request failed', [
-                'error' => $result['error'],
-                'curl_info' => $result['info'] ?? [],
-                'invoice_id' => $invoiceId,
-                'request_id' => $result['request_id'] ?? 'unknown'
-            ]);
             
             // TEMPORARY: Show more specific error for debugging
             $debugMessage = "Payment gateway error. ";
@@ -790,11 +707,6 @@ function kazawallet_link($params)
                     </div>';
                 } else {
                     // Security: Log other API errors for debugging
-                    kazawallet_log('WARNING', 'Kaza Wallet API error', [
-                        'error_key' => $errorKey,
-                        'error_message' => $responseData['error']['message'] ?? 'unknown',
-                        'invoice_id' => $invoiceId
-                    ]);
                     return '<div class="alert alert-danger">Payment processing temporarily unavailable. Please try again later or contact support.</div>';
                 }
             } else {
@@ -805,10 +717,6 @@ function kazawallet_link($params)
             // Security: Validate payment URL
             $paymentUrl = filter_var($responseData['url'], FILTER_VALIDATE_URL);
             if (!$paymentUrl || !preg_match('/^https:\/\//', $paymentUrl)) {
-                kazawallet_log('ERROR', 'Invalid payment URL received from API', [
-                    'url' => $responseData['url'] ?? 'null',
-                    'request_id' => $result['request_id'] ?? 'unknown'
-                ]);
                 return '<div class="alert alert-danger">Payment service error. Please contact support.</div>';
             }
             
@@ -818,12 +726,7 @@ function kazawallet_link($params)
             // Security: Generate proper nonce for script
             $nonce = kazawallet_generateSecureToken(16);
             
-            kazawallet_log('INFO', 'Payment link created successfully', [
-                'invoice_id' => $invoiceId,
-                'amount' => $amount,
-                'currency' => $currencyCode,
-                'request_id' => $result['request_id'] ?? 'unknown'
-            ]);
+
             
             $htmlOutput = '<script nonce="' . $nonce . '">
                 // Security: Validate URL before redirect
@@ -849,7 +752,7 @@ function kazawallet_link($params)
 
     } catch (Exception $e) {
         // Security: Log error securely without exposing to user
-        error_log('Kaza Wallet Payment Error: ' . $e->getMessage());
+
         return '<div class="alert alert-danger">Payment processing temporarily unavailable. Please try again later.</div>';
     }
 }
@@ -948,10 +851,6 @@ function kazawallet_refund($params)
 
         // Security: Validate JSON encoding
         if (json_encode($withdrawalData) === false) {
-            kazawallet_log('ERROR', 'Refund data JSON encoding failed', [
-                'transaction_id' => $transactionIdToRefund,
-                'amount' => $refundAmount
-            ]);
             return array(
                 'status' => 'error',
                 'rawdata' => 'Invalid withdrawal data format',
@@ -971,11 +870,6 @@ function kazawallet_refund($params)
         $result = kazawallet_secureCurlRequest($apiUrl, $withdrawalData, $headers, 30);
 
         if (!empty($result['error'])) {
-            kazawallet_log('ERROR', 'Refund API request failed', [
-                'error' => $result['error'],
-                'transaction_id' => $transactionIdToRefund,
-                'request_id' => $result['request_id'] ?? 'unknown'
-            ]);
             return array(
                 'status' => 'error',
                 'rawdata' => 'API connection failed',
@@ -1002,7 +896,7 @@ function kazawallet_refund($params)
 
     } catch (Exception $e) {
         // Security: Log error securely without exposing to response
-        error_log('Kaza Wallet Refund Error: ' . $e->getMessage());
+
         return array(
             'status' => 'error',
             'rawdata' => 'Refund processing error',
@@ -1047,12 +941,6 @@ function kazawallet_handleReturn($params)
     }
     
     if ($invoiceId === false) {
-        kazawallet_log('ERROR', 'Return handler: could not determine invoice ID', [
-            'params_invoiceid' => $params['invoiceid'] ?? 'missing',
-            'get_invoiceid' => $_GET['invoiceid'] ?? 'missing', 
-            'get_params' => $_GET,
-            'returnurl' => $params['returnurl'] ?? 'missing'
-        ]);
         return '<div class="alert alert-danger">
             <h4>Payment Return Error</h4>
             <p>Unable to determine invoice reference. Please contact support.</p>
@@ -1067,25 +955,15 @@ function kazawallet_handleReturn($params)
         </div>';
     }
 
-    kazawallet_log('INFO', 'Return handler called', [
-        'invoice_id' => $invoiceId,
-        'get_params' => $_GET
-    ]);
-
     try {
         // Check if invoice is already paid
         $invoiceData = localAPI('GetInvoice', ['invoiceid' => $invoiceId]);
-        kazawallet_log('INFO', 'Invoice status check', [
-            'invoice_id' => $invoiceId,
-            'api_result' => $invoiceData['result'] ?? 'unknown',
-            'invoice_status' => $invoiceData['status'] ?? 'unknown'
-        ]);
         
         if ($invoiceData['result'] === 'success') {
             $status = $invoiceData['status'];
             
             if ($status === 'Paid') {
-                kazawallet_log('INFO', 'Invoice marked as paid', ['invoice_id' => $invoiceId]);
+
                 return '<div class="alert alert-success">
                     <h4><i class="fa fa-check-circle"></i> Payment Successful!</h4>
                     <p>Your payment has been processed successfully. Thank you for your payment!</p>
@@ -1094,10 +972,8 @@ function kazawallet_handleReturn($params)
                 </div>';
             } else {
                 // Invoice not yet paid - could be processing delay
-                kazawallet_log('WARNING', 'Invoice not yet paid', [
-                    'invoice_id' => $invoiceId,
-                    'current_status' => $status
-                ]);
+
+
                 
                 return '<div class="alert alert-warning">
                     <h4><i class="fa fa-clock-o"></i> Payment Processing</h4>
@@ -1129,21 +1005,12 @@ function kazawallet_handleReturn($params)
                 </div>';
             }
         } else {
-            kazawallet_log('ERROR', 'Failed to get invoice data', [
-                'invoice_id' => $invoiceId,
-                'api_response' => $invoiceData
-            ]);
             return '<div class="alert alert-danger">
                 Unable to check payment status. Please contact support.
                 <br><small>Error: ' . htmlspecialchars($invoiceData['message'] ?? 'Unknown error') . '</small>
             </div>';
         }
     } catch (Exception $e) {
-        kazawallet_log('ERROR', 'Return handler error', [
-            'error' => $e->getMessage(),
-            'invoice_id' => $invoiceId,
-            'trace' => $e->getTraceAsString()
-        ]);
         return '<div class="alert alert-danger">
             Payment status check failed. Please contact support.
             <br><small>Error details have been logged for debugging.</small>
