@@ -3,11 +3,15 @@
  * WHMCS Kaza Wallet Payment Callback File
  *
  * This file handles payment notifications (webhooks) from Kaza Wallet
- * and processes them within WHMCS.
+ * and processes them within WHMCS. Developed by OMARINO IT Services.
  *
- * @see https://developers.whmcs.com/payment-gateways/callbacks/
- * @copyright Copyright (c) 2025
+ * @author OMARINO IT Services
+ * @copyright Copyright (c) OMARINO IT Services 2025
  * @license MIT License
+ * @version 2.1.0
+ * @website https://www.omarino.de
+ * @support info@omarino.de
+ * @see https://developers.whmcs.com/payment-gateways/callbacks/
  */
 
 // Require libraries needed for gateway module functions.

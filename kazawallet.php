@@ -3,11 +3,15 @@
  * WHMCS Kaza Wallet Payment Gateway Module
  *
  * Payment Gateway module for integrating Kaza Wallet payment processing
- * with the WHMCS platform.
+ * with the WHMCS platform. Developed by OMARINO IT Services.
  *
- * @see https://developers.whmcs.com/payment-gateways/
- * @copyright Copyright (c) 2025
+ * @author OMARINO IT Services
+ * @copyright Copyright (c) OMARINO IT Services 2025
  * @license MIT License
+ * @version 2.2.0
+ * @website https://www.omarino.de
+ * @support info@omarino.de
+ * @see https://developers.whmcs.com/payment-gateways/
  */
 
 if (!defined("WHMCS")) {
@@ -26,6 +30,9 @@ function kazawallet_MetaData()
         'APIVersion' => '1.1',
         'DisableLocalCreditCardInput' => true,
         'TokenisedStorage' => false,
+        'Developer' => 'OMARINO IT Services',
+        'Version' => '2.2.0',
+        'Website' => 'https://www.omarino.de',
     );
 }
 
@@ -41,26 +48,86 @@ function kazawallet_config()
             'Type' => 'System',
             'Value' => 'Kaza Wallet Payment Gateway',
         ),
+        // OMARINO IT Services Branding
+        '_branding' => array(
+            'FriendlyName' => 'Gateway Information',
+            'Type' => 'System',
+            'Value' => '<div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 10px 0;">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <img src="https://www.omarino.de/wp-content/uploads/2024/01/LOGO.png" alt="OMARINO IT Services" style="height: 40px; margin-right: 15px;">
+                    <div>
+                        <h4 style="margin: 0; color: #2c3e50;">OMARINO IT Services</h4>
+                        <p style="margin: 0; color: #6c757d; font-size: 14px;">Professional WHMCS Gateway Development</p>
+                    </div>
+                </div>
+                <div style="border-top: 1px solid #dee2e6; padding-top: 15px;">
+                    <p style="margin: 5px 0; color: #495057;"><strong>Gateway:</strong> Kaza Wallet Payment Gateway v2.2.0</p>
+                    <p style="margin: 5px 0; color: #495057;"><strong>Developer:</strong> OMARINO IT Services</p>
+                    <p style="margin: 5px 0; color: #495057;"><strong>Website:</strong> <a href="https://www.omarino.de" target="_blank" style="color: #007bff;">https://www.omarino.de</a></p>
+                    <p style="margin: 5px 0; color: #495057;"><strong>Support:</strong> <a href="mailto:info@omarino.de" style="color: #007bff;">info@omarino.de</a></p>
+                </div>
+            </div>',
+            'Description' => '',
+        ),
         'apiKey' => array(
             'FriendlyName' => 'API Key',
             'Type' => 'text',
             'Size' => '50',
             'Default' => '',
-            'Description' => 'Enter your Kaza Wallet API Key (x-api-key)',
+            'Description' => 'Enter your Kaza Wallet API Key (x-api-key)<br><small style="color: #6c757d;">Get this from your Kaza Wallet merchant dashboard</small>',
         ),
         'apiSecret' => array(
             'FriendlyName' => 'API Secret',
             'Type' => 'password',
             'Size' => '50',
             'Default' => '',
-            'Description' => 'Enter your Kaza Wallet API Secret (x-api-secret)',
+            'Description' => 'Enter your Kaza Wallet API Secret (x-api-secret)<br><small style="color: #6c757d;">Used for webhook signature verification</small>',
         ),
-        'testMode' => array(
-            'FriendlyName' => 'Test Mode',
-            'Type' => 'yesno',
-            'Description' => 'Enable test mode for development',
+        'paymentEmail' => array(
+            'FriendlyName' => 'Payment Email',
+            'Type' => 'text',
+            'Size' => '50',
+            'Default' => '',
+            'Description' => 'Email address registered with Kaza Wallet <br><small style="color: #6c757d;">This email must be registered in your Kaza Wallet account</small>',
+        ),
+
+        '_webhook_info' => array(
+            'FriendlyName' => 'Webhook Configuration',
+            'Type' => 'System',
+            'Value' => '<div style="background: #e8f5e8; border: 1px solid #c3e6c3; border-radius: 6px; padding: 15px; margin: 10px 0;">
+                <h5 style="margin: 0 0 10px 0; color: #155724;"><i class="fas fa-info-circle"></i> Webhook Setup Required</h5>
+                <p style="margin: 5px 0; color: #155724;">Configure this webhook URL in your Kaza Wallet merchant dashboard:</p>
+                <code style="background: #f8f9fa; padding: 5px 10px; border-radius: 4px; display: block; margin: 10px 0; color: #e83e8c;">
+                    ' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/modules/gateways/callback/kazawallet.php
+                </code>
+                <p style="margin: 5px 0; color: #155724; font-size: 13px;">This is required for automatic payment confirmations.</p>
+            </div>',
+            'Description' => '',
         ),
     );
+}
+
+/**
+ * Show on Order Form.
+ *
+ * Called to display custom content on the order form when this gateway is selected.
+ *
+ * @param array $params Payment Gateway Module Parameters
+ *
+ * @return string
+ */
+function kazawallet_orderform($params)
+{
+    return '<div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: center;">
+        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+            <img src="https://www.omarino.de/wp-content/uploads/2024/01/LOGO.png" alt="OMARINO IT Services" style="height: 30px; margin-right: 10px;">
+            <span style="font-weight: bold; color: #2c3e50;">Powered by OMARINO IT Services</span>
+        </div>
+        <p style="margin: 0; color: #6c757d; font-size: 13px;">
+            Secure payment processing via Kaza Wallet | 
+            <a href="https://www.omarino.de" target="_blank" style="color: #007bff; text-decoration: none;">www.omarino.de</a>
+        </p>
+    </div>';
 }
 
 /**
@@ -77,7 +144,7 @@ function kazawallet_link($params)
     // Gateway Configuration Parameters
     $apiKey = $params['apiKey'];
     $apiSecret = $params['apiSecret'];
-    $testMode = $params['testMode'];
+    $paymentEmail = $params['paymentEmail'];
 
     // Invoice Parameters
     $invoiceId = $params['invoiceid'];
@@ -86,7 +153,10 @@ function kazawallet_link($params)
     $currencyCode = $params['currency'];
 
     // Client Parameters
-    $email = $params['clientdetails']['email'];
+    $customerEmail = $params['clientdetails']['email'];
+    
+    // Use payment email from config if set, otherwise fall back to customer email
+    $email = !empty($paymentEmail) ? $paymentEmail : $customerEmail;
 
     // System Parameters
     $systemUrl = $params['systemurl'];
@@ -100,7 +170,7 @@ function kazawallet_link($params)
             'amount' => $amount,
             'currency' => $currencyCode,
             'email' => $email,
-            'ref' => $invoiceId, // Use invoice ID as reference
+            'ref' => (string)$invoiceId, // Convert to string as required by API
             'redirectUrl' => $returnUrl . '?kazawallet=success'
         );
 
@@ -115,6 +185,7 @@ function kazawallet_link($params)
             CURLOPT_POSTFIELDS => json_encode($paymentData),
             CURLOPT_HTTPHEADER => array(
                 'x-api-key: ' . $apiKey,
+                'x-api-secret: ' . $apiSecret,
                 'Content-Type: application/json'
             ),
             CURLOPT_SSL_VERIFYPEER => false,
@@ -137,19 +208,27 @@ function kazawallet_link($params)
         }
 
         // Check if payment link was created successfully
-        if (isset($responseData['success']) && $responseData['success']) {
-            $paymentUrl = isset($responseData['payment_url']) ? $responseData['payment_url'] : null;
+        if (isset($responseData['error'])) {
+            // API returned an error
+            $errorMessage = isset($responseData['error']['message']) ? $responseData['error']['message'] : 'Unknown API error';
             
-            if ($paymentUrl) {
-                // Redirect to payment URL
-                $htmlOutput = '<script>window.location.href = "' . htmlspecialchars($paymentUrl) . '";</script>';
-                $htmlOutput .= '<div class="text-center">';
-                $htmlOutput .= '<p>Redirecting to Kaza Wallet payment page...</p>';
-                $htmlOutput .= '<p><a href="' . htmlspecialchars($paymentUrl) . '" class="btn btn-primary">' . $langPayNow . '</a></p>';
-                $htmlOutput .= '</div>';
-                
-                return $htmlOutput;
+            if (isset($responseData['error']['details']['key']) && $responseData['error']['details']['key'] === 'USER_NOT_FOUND') {
+                return '<div class="alert alert-danger">Payment error: The email address is not registered with Kaza Wallet. Please ensure you have a Kaza Wallet account or contact support.</div>';
+            } else {
+                return '<div class="alert alert-danger">Payment error: ' . $errorMessage . '</div>';
             }
+        } else if (isset($responseData['url']) && $responseData['url']) {
+            // Success case - payment URL provided
+            $paymentUrl = $responseData['url'];
+            
+            // Redirect to payment URL
+            $htmlOutput = '<script>window.location.href = "' . htmlspecialchars($paymentUrl) . '";</script>';
+            $htmlOutput .= '<div class="text-center">';
+            $htmlOutput .= '<p>Redirecting to Kaza Wallet payment page...</p>';
+            $htmlOutput .= '<p><a href="' . htmlspecialchars($paymentUrl) . '" class="btn btn-primary">' . $langPayNow . '</a></p>';
+            $htmlOutput .= '</div>';
+            
+            return $htmlOutput;
         }
 
         // If we reach here, something went wrong
@@ -174,7 +253,6 @@ function kazawallet_refund($params)
     // Gateway Configuration Parameters
     $apiKey = $params['apiKey'];
     $apiSecret = $params['apiSecret'];
-    $testMode = $params['testMode'];
 
     // Transaction Parameters
     $transactionIdToRefund = $params['transid'];

@@ -1,18 +1,17 @@
 # WHMCS Kaza Wallet Payment Gateway
 
-A WHMCS payment gateway plugin for Kaza Wallet payment processing.
+A production-ready WHMCS payment gateway plugin for Kaza Wallet payment processing.
 
-**Status: ✅ WORKING! Solution found - activation requires Apps & Integrations step first.**
+**Developed by OMARINO IT Services** - Professional WHMCS Gateway Development
 
-## ✅ SOLUTION FOUND!
+<div align="center">
+  <img src="https://www.omarino.de/wp-content/uploads/2024/01/LOGO.png" alt="OMARINO IT Services" height="60">
+  <p><strong>OMARINO IT Services</strong><br>
+  Website: <a href="https://www.omarino.de">https://www.omarino.de</a><br>
+  Support: <a href="mailto:info@omarino.de">info@omarino.de</a></p>
+</div>
 
-**IMPORTANT**: The gateway must be activated through **Apps & Integrations** first, not directly in Payment Gateways.
-
-### Correct Activation Process:
-1. **First**: Setup → System Settings → Payment → **Apps & Integrations** 
-2. **Then**: Setup → Payment Gateways (gateway will now appear here)
-
-This explains why the gateway wasn't appearing despite all diagnostics passing!
+---
 
 ## Features
 
@@ -21,26 +20,27 @@ This explains why the gateway wasn't appearing despite all diagnostics passing!
 - ✅ **Webhook processing** - Handles payment notifications automatically
 - ✅ **Signature verification** - Secure HMAC-SHA512 verification
 - ✅ **Refund support** - Processes refunds via withdrawal requests
+- ✅ **Admin email override** - Configure a master email for all payments
+- ✅ **Order form branding** - Professional OMARINO IT Services branding display
+- ✅ **Production ready** - No test mode, live environment only
 - ✅ **WHMCS-compliant** - Follows all WHMCS standards
 - ✅ **Third-party gateway** - Redirects users to Kaza Wallet payment page
 
-## Quick Installation
+## Installation
 
 ### Step 1: Upload Files
-1. Upload **only** `kazawallet.php` to your WHMCS `modules/gateways/` directory
+1. Upload `kazawallet.php` to your WHMCS `modules/gateways/` directory
 2. Upload `callback/kazawallet.php` to your WHMCS `modules/gateways/callback/` directory
 
-### Step 2: Activate the Gateway ⚠️ IMPORTANT
-**Correct activation process:**
-
-1. **First**: Login to WHMCS Admin
+### Step 2: Activate the Gateway
+1. **Login to WHMCS Admin**
 2. **Go to**: Setup → System Settings → Payment → **Apps & Integrations**
 3. **Find**: "Kaza Wallet Payment Gateway" and activate it there
 4. **Then**: Go to Setup → Payment Gateways 
 5. **Find**: "Kaza Wallet Payment Gateway" (it will now appear here)
 6. **Click**: "Activate" and configure with your API credentials
 
-**Note**: The gateway MUST be activated in Apps & Integrations first, or it won't appear in Payment Gateways!
+**Important**: The gateway MUST be activated in Apps & Integrations first!
 
 ## Configuration
 
@@ -48,9 +48,10 @@ This explains why the gateway wasn't appearing despite all diagnostics passing!
 |-------|-------------|
 | API Key | Your Kaza Wallet API Key (x-api-key) |
 | API Secret | Your Kaza Wallet API Secret (x-api-secret) |
+| Payment Email | Registered Kaza Wallet email (overrides customer emails) |
 | Test Mode | Enable for testing |
 
-**Important**: Get your API credentials from your Kaza Wallet merchant dashboard.
+**Get your API credentials from your Kaza Wallet merchant dashboard.**
 
 ## File Structure
 
@@ -62,73 +63,88 @@ whmcs-root/
     └── kazawallet.php              # Callback handler (REQUIRED)
 ```
 
-## Troubleshooting
+## Repository Structure
 
-### Gateway Not Appearing?
+```
+whmcs-kazawallet/
+├── kazawallet.php                  # Main gateway file
+├── callback/
+│   └── kazawallet.php              # Webhook callback handler
+├── README.md                       # This documentation
+├── CHANGELOG.md                    # Version history
+└── LICENSE                         # License file
+```
 
-⚠️ **MOST COMMON ISSUE**: Gateway must be activated in **Apps & Integrations** first!
+## Payment Flow
 
-**Correct process:**
-1. **Setup → System Settings → Payment → Apps & Integrations** (activate here first)
-2. **Then** Setup → Payment Gateways (gateway will appear here)
-
-**Other checks:**
-1. **Check file location** - Ensure `kazawallet.php` is in `modules/gateways/`
-2. **Check file permissions** - Should be readable (644 or 755)
-3. **Clear WHMCS cache** - Admin → System Settings → General Settings → Other → Clear Template Cache
-4. **Refresh browser** and check Payment Gateways again
-
-### Common Issues
-
-- **File in wrong directory** - Must be in `modules/gateways/`
-- **Incorrect filename** - Must be exactly `kazawallet.php`
-- **Forgot Apps & Integrations step** - Must activate there first
-- **WHMCS cache** - Clear template cache and refresh browser
-
-## Support
-
-1. Check WHMCS gateway logs: Admin → Utilities → Logs → Gateway Log
-2. Ensure you're using the exact files from this repository  
-3. Follow the correct activation process: Apps & Integrations first, then Payment Gateways
-
-## Version History
-
-- **v2.0.0** - 🚀 FULL API INTEGRATION: Real Kaza Wallet API implementation with payment links, webhooks, and refunds
-- **v1.0.5** - 🎉 WORKING VERSION: Found activation solution (Apps & Integrations first), cleaned up unnecessary files
-- **v1.0.4** - Created comprehensive diagnostic tools 
-- **v1.0.3** - Simplified to match WHMCS sample exactly
-- **v1.0.2** - Consolidated version following official WHMCS sample gateway structure
-- **v1.0.1** - Fixed PHP 5.6 compatibility 
-- **v1.0.0** - Initial release
-
-## Requirements
-
-- WHMCS 7.0 or higher
-- PHP 5.6 or higher
-- Standard WHMCS installation
-
-## Notes
-
-- **Full Kaza Wallet API integration** - Uses real payment links and webhooks
-- **Secure payment processing** - HMAC-SHA512 signature verification
-- **Automatic payment confirmation** - Webhooks update invoice status automatically  
-- **Refund support** - Creates withdrawal requests for refunds
-- **Production ready** - Ready for live payments with proper API credentials
-
-## API Integration Details
-
-### Payment Flow:
 1. Customer clicks "Pay Now" 
 2. Gateway creates payment link via Kaza Wallet API
 3. Customer redirected to Kaza Wallet payment page
 4. After payment, Kaza Wallet sends webhook to your site
 5. Callback verifies signature and marks invoice as paid
 
-### Webhook URL:
-Your webhook URL will be: `https://yourdomain.com/modules/gateways/callback/kazawallet.php`
+## Webhook Configuration
 
-**⚠️ Important**: Configure this webhook URL in your Kaza Wallet merchant dashboard!
+Configure this webhook URL in your Kaza Wallet merchant dashboard:
+```
+https://yourdomain.com/modules/gateways/callback/kazawallet.php
+```
+
+## Requirements
+
+- WHMCS 7.0 or higher
+- PHP 5.6 or higher
+- Valid Kaza Wallet merchant account
+- Registered email address in Kaza Wallet system
+
+## Important Notes
+
+- **Email Registration**: The Payment Email field should contain an email address that's registered with Kaza Wallet
+- **Production Ready**: This gateway is ready for live payments with proper API credentials
+- **Secure Processing**: Uses HMAC-SHA512 signature verification for webhooks
+- **Automatic Updates**: Invoice status is updated automatically via webhooks
+
+## Troubleshooting
+
+### Gateway Not Appearing?
+1. **Setup → System Settings → Payment → Apps & Integrations** (activate here first)
+2. **Then** Setup → Payment Gateways (gateway will appear here)
+
+### Common Issues
+- **User not found error**: Configure Payment Email with a registered Kaza Wallet email
+- **File location**: Ensure `kazawallet.php` is in `modules/gateways/`
+- **WHMCS cache**: Clear template cache if needed
+
+## Version History
+
+- **v2.1.0** - 🎉 PRODUCTION READY: Working payment gateway with email override
+- **v2.0.0** - Full API integration with payment links, webhooks, and refunds
+- **v1.0.0** - Initial release
+
+## Support & Development
+
+<div align="center">
+  <img src="https://www.omarino.de/wp-content/uploads/2024/01/LOGO.png" alt="OMARINO IT Services" height="50">
+  
+  **Professional WHMCS Gateway Development**
+  
+  **OMARINO IT Services**  
+  🌐 Website: [https://www.omarino.de](https://www.omarino.de)  
+  📧 Support: [info@omarino.de](mailto:info@omarino.de)  
+  💬 Professional WHMCS development and customization services  
+</div>
+
+### Need Custom Gateway Development?
+
+OMARINO IT Services specializes in:
+- ✅ Custom WHMCS Payment Gateway Development
+- ✅ Payment Provider API Integration
+- ✅ WHMCS Module Development
+- ✅ E-commerce Solutions
+- ✅ Professional Support & Maintenance
+
+Contact us for your next WHMCS project!
 
 ---
 
-**✅ Gateway now works! Remember the Apps & Integrations activation step.**
+**✅ Ready for production use!**

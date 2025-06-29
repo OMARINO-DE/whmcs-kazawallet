@@ -2,10 +2,83 @@
 
 All notable changes to the WHMCS Kaza Wallet Payment Gateway will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [v2.2.0] - 2025-06-29 - 🎯 FINAL PRODUCTION VERSION
 
-## [2.0.0] - 2025-06-28 - 🚀 FULL KAZA WALLET API INTEGRATION
+### ✅ COMPLETE PRODUCTION RELEASE
+- **FULLY BRANDED**: Added OMARINO IT Services branding to order form display
+- **PRODUCTION READY**: Removed test mode configuration for live environment only
+- **CUSTOMER FACING**: Enhanced user experience with professional branding
+
+### Added
+- Order form branding display with OMARINO IT Services logo and information
+- Professional customer-facing branding on payment selection
+
+### Removed
+- Test mode configuration option (production environment only)
+- All test mode references in code
+
+### Changed
+- Updated version to 2.2.0 across all files
+- Enhanced customer experience with branded payment selection
+
+## [v2.1.0] - 2025-06-29 - 🎉 PRODUCTION READY
+
+### ✅ WORKING RELEASE
+- **CONFIRMED WORKING**: Payment gateway fully functional with real Kaza Wallet API
+- **Payment Email Override**: Added admin setting to configure master email for all payments
+- **Data Type Fix**: Fixed invoice ID string conversion for API compatibility
+- **Removed Debug Logging**: Cleaned up all debugging code for production use
+- **Repository Cleanup**: Removed all test, diagnostic, and backup files
+
+### Added
+- Payment Email configuration field in admin settings
+- Automatic string conversion for invoice reference field
+- Production-ready error handling
+
+### Fixed
+- "USER_NOT_FOUND" error by allowing admin email override
+- "ref must be a string" validation error
+- Missing x-api-secret header in payment link creation
+
+### Removed
+- All debug logging functions
+- Test and diagnostic files
+- Unnecessary documentation files
+
+## [v2.0.0] - 2025-06-28 - FULL API INTEGRATION
+
+### Added
+- Real Kaza Wallet API integration
+- Payment link creation via `/wallet/createPaymentLink`
+- Webhook signature verification (HMAC-SHA512)
+- Refund support via `/wallet/createWithdrawalRequest`
+- Proper error handling for API responses
+
+### Changed
+- Complete rewrite using actual Kaza Wallet API endpoints
+- Updated configuration fields (apiKey, apiSecret)
+- Improved response parsing and error handling
+
+## [v1.0.5] - 2025-06-27 - WORKING VERSION
+
+### Fixed
+- **MAJOR**: Found correct activation process (Apps & Integrations first)
+- Gateway now appears and activates properly in WHMCS
+
+### Added
+- Comprehensive troubleshooting documentation
+- Step-by-step activation guide
+
+## [v1.0.0] - 2025-06-26 - Initial Release
+
+### Added
+- Basic WHMCS gateway structure
+- Sample payment processing functions
+- Initial documentation
+
+---
+
+**Current Status**: ✅ **PRODUCTION READY** - Fully working with real Kaza Wallet API integration
 
 ### ✅ MAJOR UPDATE - Real API Implementation
 - **Complete API Integration:** Implemented actual Kaza Wallet API endpoints
