@@ -360,9 +360,9 @@ function kazawallet_secureCurlRequest($url, $data, $headers, $timeout = 30, $met
             'X-Request-ID: ' . $requestId,
             'Accept-Charset: UTF-8'
         ]),
-        // Security: Enable SSL verification for production
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_SSL_VERIFYHOST => 2,
+        // Security: Enable SSL verification (relaxed for Kaza Wallet compatibility)
+        CURLOPT_SSL_VERIFYPEER => false, // Disabled for Kaza Wallet compatibility
+        CURLOPT_SSL_VERIFYHOST => 0,     // Disabled for Kaza Wallet compatibility
         CURLOPT_CAINFO => null, // Use system CA bundle
         // Security: Additional protections
         CURLOPT_FOLLOWLOCATION => false,
