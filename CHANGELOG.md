@@ -9,6 +9,7 @@ All notable changes to the WHMCS Kaza Wallet Payment Gateway will be documented 
 - **WEBHOOK PROCESSING**: Real payment notifications properly handled and invoices marked as paid
 - **FIELD COMPATIBILITY**: Fixed webhook handler to accept both `order_id` and `id` field names from Kaza Wallet
 - **CLEAN CODEBASE**: Removed all debugging, testing, and development files for production deployment
+- **LICENSE UPDATE**: Updated to Mozilla Public License Version 2.0
 
 ### 🧹 CLEANUP & OPTIMIZATION
 - **REMOVED DEBUG FILES**: Cleaned up all temporary debugging and testing tools

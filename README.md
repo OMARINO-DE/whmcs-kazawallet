@@ -138,6 +138,12 @@ OMARINO IT Services specializes in:
 
 Contact us for your next WHMCS project!
 
+## License
+
+This Source Code Form is subject to the terms of the **Mozilla Public License, v. 2.0**. If a copy of the MPL was not distributed with this file, You can obtain one at [https://mozilla.org/MPL/2.0/](https://mozilla.org/MPL/2.0/).
+
+**Copyright (c) OMARINO IT Services 2025**
+
 ---
 
 **✅ PRODUCTION READY v3.0.0**

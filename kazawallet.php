@@ -7,11 +7,17 @@
  *
  * @author OMARINO IT Services
  * @copyright Copyright (c) OMARINO IT Services 2025
- * @license MIT License
+ * @license Mozilla Public License Version 2.0
  * @version 3.0.0
  * @website https://www.omarino.de
  * @support info@omarino.de
  * @see https://developers.whmcs.com/payment-gateways/
+ */
+
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 if (!defined("WHMCS")) {
